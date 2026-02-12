@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "locomotive-scroll/dist/locomotive-scroll.css";
 
 :root {
   --background: #ffffff;
@@ -23,4 +24,89 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.noise-bg {
+  position: relative;
+  isolation: isolate;
+  background-color: #ffffff;
+}
+
+.noise-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(0, 0, 0, 0.14) 0 1px, transparent 1.45px),
+    radial-gradient(circle, rgba(0, 0, 0, 0.09) 0 0.9px, transparent 1.35px),
+    radial-gradient(circle, rgba(0, 0, 0, 0.07) 0 0.8px, transparent 1.25px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.14'/></svg>");
+  background-position: 0 0, 35px 22px, 12px 48px, 0 0;
+  background-size: 150px 150px, 180px 180px, 220px 220px, 140px 140px;
+  opacity: 0.55;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: -1;
+  animation: particleDriftA 32s linear infinite;
+}
+
+.noise-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(0, 0, 0, 0.08) 0 0.9px, transparent 1.35px),
+    radial-gradient(circle, rgba(0, 0, 0, 0.06) 0 0.8px, transparent 1.25px);
+  background-position: 18px 30px, 60px 90px;
+  background-size: 210px 210px, 260px 260px;
+  opacity: 0.35;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: -1;
+  animation: particleDriftB 44s linear infinite;
+}
+
+@keyframes particleDriftA {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-24px, -16px, 0);
+  }
+}
+
+@keyframes particleDriftB {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(18px, -22px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noise-bg::before,
+  .noise-bg::after {
+    animation: none;
+  }
+}
+
+.rotate-word {
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 9999px;
+  padding: 0.05em 0.5em;
+  line-height: 1.2;
+  animation: rotateWord 0.45s ease;
+}
+
+@keyframes rotateWord {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
