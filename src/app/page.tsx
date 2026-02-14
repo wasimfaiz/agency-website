@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import HeroOrb from "../components/HeroOrb";
 import AboutSection from "../components/AboutSection";
 import Image from "next/image";
@@ -80,12 +80,21 @@ export default function Home() {
     offset: ["start start", "end end"],
   });
 
-  // Reveal sequence: Heading is visible, Description fades in, Button fades in
-  const descOpacity = useTransform(scrollYProgress, [0.15, 0.3], [0, 1]);
-  const descY = useTransform(scrollYProgress, [0.15, 0.3], [20, 0]);
+  const smoothHeroProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 28,
+    mass: 0.5,
+  });
 
-  const btnOpacity = useTransform(scrollYProgress, [0.35, 0.5], [0, 1]);
-  const btnY = useTransform(scrollYProgress, [0.35, 0.5], [20, 0]);
+  // Ordered reveal: heading -> tagline -> button, then hold while section stays pinned.
+  const headingOpacity = useTransform(smoothHeroProgress, [0.03, 0.18], [0, 1]);
+  const headingY = useTransform(smoothHeroProgress, [0.03, 0.18], [45, 0]);
+
+  const descOpacity = useTransform(smoothHeroProgress, [0.2, 0.36], [0, 1]);
+  const descY = useTransform(smoothHeroProgress, [0.2, 0.36], [30, 0]);
+
+  const btnOpacity = useTransform(smoothHeroProgress, [0.38, 0.52], [0, 1]);
+  const btnY = useTransform(smoothHeroProgress, [0.38, 0.52], [30, 0]);
 
   const [industryIndex, setIndustryIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,7 +108,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main id="top" className="noise-bg min-h-screen overflow-x-clip bg-white text-black">
+    <main id="top" className="noise-bg min-h-screen bg-white text-black">
       {/* NAVIGATION BAR */}
       <header className="fixed top-0 z-30 w-full border-b border-black/5 bg-white/90 text-[10px] uppercase tracking-[0.35em] text-black/60 backdrop-blur sm:text-xs">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-10">
@@ -183,7 +192,7 @@ export default function Home() {
         {/* HERO SECTION */}
         <section
           ref={heroRef}
-          className="relative min-h-[250vh]"
+          className="relative min-h-[320vh]"
         >
           <div className="sticky top-0 h-screen w-full overflow-hidden">
             <div className="absolute inset-0 -z-10 flex items-center justify-center" aria-hidden="true">
@@ -193,13 +202,11 @@ export default function Home() {
             </div>
 
             {/* HERO CONTENT */}
-            <div className="mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-4 sm:px-8 lg:px-10">
-              <div>
+            <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center px-4 sm:px-8 lg:px-10">
+              <div className="w-full max-w-4xl text-center">
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="text-center text-[clamp(2.1rem,9vw,4.5rem)] font-semibold leading-[0.98] tracking-tight sm:text-left"
+                  style={{ opacity: headingOpacity, y: headingY }}
+                  className="text-center text-[clamp(2.1rem,9vw,4.5rem)] font-semibold leading-[0.98] tracking-tight"
                 >
                   {heroLines.map((line) => (
                     <span key={line} className="block overflow-hidden">
@@ -212,7 +219,7 @@ export default function Home() {
 
                 <motion.div
                   style={{ opacity: descOpacity, y: descY }}
-                  className="mx-auto mt-6 max-w-xl text-center text-base leading-7 text-black/70 sm:mx-0 sm:text-left sm:text-lg"
+                  className="mx-auto mt-6 max-w-xl text-center text-base leading-7 text-black/70 sm:text-lg"
                 >
                   <p>
                     A strategy-led design studio specializing in laying down the
@@ -229,7 +236,7 @@ export default function Home() {
 
                 <motion.div
                   style={{ opacity: btnOpacity, y: btnY }}
-                  className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium sm:justify-start"
+                  className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium"
                 >
                   <button className="rounded-full bg-black px-6 py-3 text-white transition hover:bg-black/85">
                     Start a Project

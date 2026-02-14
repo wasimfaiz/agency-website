@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${openSans.variable} ${montserrat.variable} antialiased font-sans`}
+        className={`${openSans.variable} ${montserrat.variable} antialiased font-sans overflow-x-hidden`}
       >
         <SmoothScroll>{children}</SmoothScroll>
       </body>
