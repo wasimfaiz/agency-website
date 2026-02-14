@@ -35,8 +35,20 @@ export default function HeroOrb({ scrollYProgress }: HeroOrbProps) {
 
     // Start with Black & White (Gray)
     const startColor = new THREE.Color(0x444444);
-    // End with a vibrant brand color (e.g., Electric Blue or multiple steps)
-    const endColor = new THREE.Color(0x3b82f6); // Tailwind blue-500
+
+    // Random Vibrant Color on Refresh
+    const colors = [
+      0x3b82f6, // Blue
+      0xa855f7, // Purple
+      0xec4899, // Pink
+      0x06b6d4, // Cyan
+      0x22c55e, // Green
+      0xf97316, // Orange
+      0xef4444, // Red
+      0xeab308, // Yellow
+    ];
+    const randomHex = colors[Math.floor(Math.random() * colors.length)];
+    const endColor = new THREE.Color(randomHex);
 
     const material = new THREE.MeshBasicMaterial({
       color: startColor,
@@ -60,23 +72,11 @@ export default function HeroOrb({ scrollYProgress }: HeroOrbProps) {
       if (scrollYProgress) {
         const progress = scrollYProgress.get() || 0;
 
-        // Example: Interpolate multiple colors if desired, 
-        // or simple lerp for "filling color".
-        // Let's do a 3-step transition if user wants "different color each time"
-        // 0.0 - 0.5: Gray -> Blue
-        // 0.5 - 1.0: Blue -> Purple
+        const color1 = startColor;
+        const color2 = endColor;
 
-        const color1 = new THREE.Color(0x444444); // Gray
-        const color2 = new THREE.Color(0x3b82f6); // Blue
-        const color3 = new THREE.Color(0xa855f7); // Purple
-
-        if (progress < 0.5) {
-          const t = progress * 2; // Map 0-0.5 to 0-1
-          material.color.lerpColors(color1, color2, t);
-        } else {
-          const t = (progress - 0.5) * 2; // Map 0.5-1.0 to 0-1
-          material.color.lerpColors(color2, color3, t);
-        }
+        // Smooth transition from Gray (Start) to Random Vibrant (End)
+        material.color.lerpColors(color1, color2, progress);
       }
 
       renderer.render(scene, camera);
